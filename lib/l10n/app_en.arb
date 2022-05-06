@@ -1,0 +1,7 @@
+{
+  "language": "testing language",
+  "@language": {
+    "description": "The current language"
+  },
+  "home_head_title": "Bird of the Month"
+}
