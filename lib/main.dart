@@ -42,6 +42,9 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
 
+
+
+
   final String title;
 
   @override
@@ -67,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
           HomePage(
             updatePage: updatePage,
           ), //index 0
-          const BirdDetail(
+          BirdDetail(
             birdID: 1,
             englishName: 'testing',
             sciName: 'sciName',

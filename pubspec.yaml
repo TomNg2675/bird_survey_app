@@ -39,6 +39,9 @@ dependencies:
   google_fonts: ^2.0.0
   animations: ^2.0.2
   decorated_icon: ^1.2.1
+  image_picker: ^0.8.5+3
+  path_provider: 2.0.10
+  sqflite: ^2.0.0+3
 
   #store & load data
   shared_preferences: ^2.0.13
