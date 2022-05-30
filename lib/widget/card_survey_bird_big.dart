@@ -34,7 +34,7 @@ class cardSurveyBirdBig extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
       child: InkWell(
-        onTap: () => onClickListener(),
+        onTap: () => onClickListener(context, birdID, englishName,chineseName),
         child: Card(
           semanticContainer: true,
           clipBehavior: Clip.antiAliasWithSaveLayer,

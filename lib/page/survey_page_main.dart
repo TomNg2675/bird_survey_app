@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bird_app/page/bird_detail.dart';
 import 'package:bird_app/widget/card_survey_bird.dart';
 import 'package:bird_app/widget/card_survey_bird_big.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,6 @@ class SurveyPageMain extends StatefulWidget {
 
 class _SurveyPageMainState extends State<SurveyPageMain> {
   final String apiUri = '';
-
 
   //fetch full Bird list from API
   Future getBirdList() async {
@@ -73,11 +73,10 @@ class _SurveyPageMainState extends State<SurveyPageMain> {
                     ),
                     itemBuilder: (context, i) {
                       return cardSurveyBirdBig(
-                        birdID: snapshot.data[i].birdID,
-                        englishName: snapshot.data[i].englishName,
-                        chineseName: snapshot.data[i].chineseName,
-                        onClickListener: showBirdDialog
-                      );
+                          birdID: snapshot.data[i].birdID,
+                          englishName: snapshot.data[i].englishName,
+                          chineseName: snapshot.data[i].chineseName,
+                          onClickListener: showBirdDialog);
                     },
                     itemCount: snapshot.data?.length ?? 0,
                   );
@@ -90,40 +89,31 @@ class _SurveyPageMainState extends State<SurveyPageMain> {
     );
   }
 
-  void showBirdDialog(BuildContext context) => showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (context) {
-      return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(height: 12),
-              Text(
-                'This is a Custom Dialog',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+  void showBirdDialog(
+    BuildContext context,
+    int birdID,
+    String englishName,
+    String chineseName,
+  ) =>
+      showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (context) {
+          return Dialog(
+              backgroundColor: Colors.transparent,
+              insetPadding: EdgeInsets.all(10),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
               ),
-              SizedBox(height: 12),
-              Text(
-                'You get more customisation freedom in this type of dialogs',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20),
-              ),
-              SizedBox(height: 12),
-              ElevatedButton(
-                child: Text('Close'),
-                onPressed: () => Navigator.of(context).pop(),
-              )
-            ],
-          ),
-        ),
+              child: BirdDetail(
+                birdID: birdID,
+                englishName: englishName,
+                sciName: chineseName,
+                key: UniqueKey(),
+              ));
+        },
       );
-    },
-  );
+
+  void confirmCallback(){}
+
 }
