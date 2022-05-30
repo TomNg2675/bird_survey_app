@@ -1,0 +1,34 @@
+{
+  "bird_activity": [
+    {
+      "actID": 1,
+      "activity": "Flying"
+    },
+    {
+      "actID": 2,
+      "activity": "Singing"
+    },
+    {
+      "actID": 3,
+      "activity": "Nest Building"
+    },
+    {
+      "actID": 4,
+      "activity": "Carrying food"
+    },
+    {
+      "actID": 5,
+      "activity": "Feeding"
+    }
+  ],
+  "bird_status": [
+    {
+      "statID": 1,
+      "status": "injured"
+    },
+    {
+      "statID": 2,
+      "status": "sick"
+    }
+  ]
+}

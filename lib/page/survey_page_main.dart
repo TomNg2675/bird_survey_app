@@ -76,6 +76,7 @@ class _SurveyPageMainState extends State<SurveyPageMain> {
                         birdID: snapshot.data[i].birdID,
                         englishName: snapshot.data[i].englishName,
                         chineseName: snapshot.data[i].chineseName,
+                        onClickListener: showBirdDialog
                       );
                     },
                     itemCount: snapshot.data?.length ?? 0,
@@ -88,4 +89,41 @@ class _SurveyPageMainState extends State<SurveyPageMain> {
       ],
     );
   }
+
+  void showBirdDialog(BuildContext context) => showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: 12),
+              Text(
+                'This is a Custom Dialog',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              SizedBox(height: 12),
+              Text(
+                'You get more customisation freedom in this type of dialogs',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 20),
+              ),
+              SizedBox(height: 12),
+              ElevatedButton(
+                child: Text('Close'),
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }
