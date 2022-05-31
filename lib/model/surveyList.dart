@@ -5,9 +5,15 @@ class SurveyList {
   final DateTime createdTime;
   final List<Survey> surveyList;
 
+  const SurveyList(
+      {required this.userID,
+      required this.createdTime,
+      required this.surveyList});
 
-  const SurveyList({
-    required this.userID,
-    required this.createdTime,
-    required this.surveyList
-  });}
+  Map<String, dynamic> toJson() => {
+        'userID': userID,
+        'createdTime': createdTime,
+        'surveyList':
+            List<dynamic>.from(surveyList.map((survey) => survey.toJson()))
+      };
+}

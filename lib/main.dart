@@ -16,6 +16,8 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'model/surveyList.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -56,6 +58,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   bool isLoading = false;
+  int? userID = 1;
   late List<Survey> surveys;
 
   @override
@@ -79,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
         index: _currentIndex,
         children: [
           HomePage(
-            updatePage: refreshSurveys,
+            updatePage: testSurveyList,
           ), //index 0
           BirdDetail(
             birdID: 1,
@@ -171,6 +174,18 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 
+  Future testSurveyList() async {
+    if (userID == null) return;
+
+    setState(() => isLoading = true);
+
+    List<Survey> surveys = await SurveyListDb.instance.readAllSurveys();
+
+    SurveyList surveyList = SurveyList(userID: userID, createdTime: DateTime.now(), surveyList: surveys);
+
+    setState(() => isLoading = false);
+    print(surveyList.toJson().toString());
+  }
 
   // Future submitSurveys() async {
   //   var response = await http.get(Uri.http('192.168.1.3:9003', '/birdlist'));
