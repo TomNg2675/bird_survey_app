@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class BtnBlueBig extends StatelessWidget {
   const BtnBlueBig({Key? key, required this.onClickHandler, required this.toPage }) : super(key: key);
 
-  final Function onClickHandler;
+  final Future<void> Function() onClickHandler;
   final int toPage;
 
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
-      onPressed: () => onClickHandler(toPage),
+      onPressed: () => onClickHandler(),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       padding: const EdgeInsets.all(0.0),
       child: Ink(

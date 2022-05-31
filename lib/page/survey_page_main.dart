@@ -9,8 +9,9 @@ import './search_bar.dart';
 import '../class/Bird.dart';
 
 class SurveyPageMain extends StatefulWidget {
-  const SurveyPageMain({Key? key}) : super(key: key);
+  const SurveyPageMain({Key? key, required this.confirmCallback}) : super(key: key);
 
+  final Function confirmCallback;
   @override
   State<SurveyPageMain> createState() => _SurveyPageMainState();
 }
@@ -110,10 +111,11 @@ class _SurveyPageMainState extends State<SurveyPageMain> {
                 englishName: englishName,
                 sciName: chineseName,
                 key: UniqueKey(),
+                confirmCallback: widget.confirmCallback,
               ));
         },
       );
 
-  void confirmCallback(){}
+
 
 }

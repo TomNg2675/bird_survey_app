@@ -4,10 +4,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePage extends StatelessWidget {
 
-  final Function updatePage;
+  final Future<void> Function() updatePage;
   const HomePage({Key? key, required this.updatePage}) : super(key: key);
-
-
 
   @override
   Widget build(BuildContext context) {

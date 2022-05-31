@@ -26,7 +26,6 @@ class SurveyListDb {
   Future _createDB(Database db, int version) async {
     const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
     const textType = 'TEXT NOT NULL';
-    const boolType = 'BOOLEAN NOT NULL';
     const integerType = 'INTEGER NOT NULL';
     const blob = 'BLOB';
 
@@ -41,7 +40,7 @@ CREATE TABLE $tableSurveys (
   ${SurveyFields.video} $blob,
   ${SurveyFields.birdStatus} $textType,
   ${SurveyFields.birdActivity} $textType,
-  ${SurveyFields.createdTime} $textType,
+  ${SurveyFields.count} $integerType
   )
 ''');
   }
@@ -81,7 +80,7 @@ CREATE TABLE $tableSurveys (
   Future<List<Survey>> readAllSurveys() async {
     final db = await instance.database;
 
-    const orderBy = '${SurveyFields.createdTime} ASC';
+    const orderBy = '${SurveyFields.recordTime} ASC';
     // final result =
     //     await db.rawQuery('SELECT * FROM $tableNotes ORDER BY $orderBy');
 

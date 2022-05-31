@@ -1,3 +1,5 @@
+import 'package:bird_app/db/surveylist_db.dart';
+import 'package:bird_app/model/survey.dart';
 import 'package:bird_app/page/bird_detail.dart';
 import 'package:bird_app/page/survey_page_main.dart';
 import 'package:bird_app/widget/bottomNavBar.dart';
@@ -10,6 +12,9 @@ import './page/home_page.dart';
 import './widget/bottomNavBar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:bird_app/l10n.dart';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(const MyApp());
@@ -42,9 +47,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
 
-
-
-
   final String title;
 
   @override
@@ -53,6 +55,15 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
+  bool isLoading = false;
+  late List<Survey> surveys;
+
+  @override
+  void initState() {
+    super.initState();
+    print('running');
+    refreshSurveys();
+  }
 
   void updatePage(int currentIndex) {
     setState(() => _currentIndex = currentIndex);
@@ -68,21 +79,27 @@ class _MyHomePageState extends State<MyHomePage> {
         index: _currentIndex,
         children: [
           HomePage(
-            updatePage: updatePage,
+            updatePage: refreshSurveys,
           ), //index 0
           BirdDetail(
             birdID: 1,
             englishName: 'testing',
             sciName: 'sciName',
-            dateTime: '2021-1-1',
             imageUrl: './assets/images/001.jpg',
             long: 12345,
             lat: 12345,
+            confirmCallback: confirmCallback,
           ), //index 1
-          const SurveyPageMain(), //index 2
-          const SurveyPageMain(), //index 3
+          SurveyPageMain(
+            confirmCallback: confirmCallback,
+          ), //index 2
+          SurveyPageMain(
+            confirmCallback: confirmCallback,
+          ), //index 3
           const ProfilePage(), //index 4
-          const SurveyPageMain(), //index 5
+          SurveyPageMain(
+            confirmCallback: confirmCallback,
+          ), //index 5
         ],
       ),
       bottomNavigationBar: Container(
@@ -100,4 +117,72 @@ class _MyHomePageState extends State<MyHomePage> {
           )),
     );
   }
+
+  void confirmCallback(int birdID, int count, DateTime surveyTime, double lat,
+      double long, String activity, String status, File? image, File? video) {
+    if (count == 0) return;
+
+    addSurvey(birdID, long, lat, surveyTime, image, video, status, activity,
+        DateTime.now(), count);
+
+    print(
+      'callback ok: ${birdID}, count: ${count}, time: ${surveyTime}, coordinate: ${lat},${long}, activity: ${activity}, status: ${status}',
+    );
+  }
+
+  Future addSurvey(
+    birdID,
+    long,
+    lat,
+    recordTime,
+    File? image,
+    File? video,
+    birdStatus,
+    birdActivity,
+    createdTime,
+    count,
+  ) async {
+    final survey = Survey(
+      birdID: birdID,
+      long: long,
+      lat: lat,
+      recordTime: recordTime,
+      image: image,
+      video: video,
+      birdStatus: birdStatus,
+      birdActivity: birdActivity,
+      count: count,
+    );
+
+    await SurveyListDb.instance.create(survey);
+  }
+
+  Future refreshSurveys() async {
+    setState(() => isLoading = true);
+
+    surveys = await SurveyListDb.instance.readAllSurveys();
+
+    setState(() => isLoading = false);
+    print('hello');
+    for (var survey in surveys) {
+      print(
+          'BirdID: ${survey.birdID}, BirdCount: ${survey.count}, Activity: ${survey.birdActivity}');
+    }
+  }
+
+
+
+  // Future submitSurveys() async {
+  //   var response = await http.get(Uri.http('192.168.1.3:9003', '/birdlist'));
+  //   var jsonData = jsonDecode(response.body);
+  //   List<Bird> birdList = [];
+  //
+  //   for (var b in jsonData) {
+  //     Bird bird = Bird(
+  //         b['BirdID'], b['EnglishName'], b['ChineseName'], b['ScientificName']);
+  //     birdList.add(bird);
+  //   }
+  //   print(birdList.length);
+  //   return birdList;
+  // }
 }

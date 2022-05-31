@@ -1,4 +1,5 @@
-import 'dart:html';
+import 'dart:io';
+
 
 final String tableSurveys = 'surveys';
 
@@ -13,8 +14,7 @@ class SurveyFields {
     image,
     video,
     birdStatus,
-    birdActivity,
-    createdTime
+    birdActivity
   ];
 
   static const String id = '_id';
@@ -26,7 +26,7 @@ class SurveyFields {
   static const String video = 'video';
   static const String birdStatus = 'birdStatus';
   static const String birdActivity = 'birdActivity';
-  static const String createdTime = 'createdTime';
+  static const String count = 'count';
 }
 
 class Survey {
@@ -35,11 +35,11 @@ class Survey {
   final double long;
   final double lat;
   final DateTime recordTime;
-  final File image;
-  final File video;
+  final File? image;
+  final File? video;
   final String birdStatus;
   final String birdActivity;
-  final DateTime createdTime;
+  final int count;
 
   const Survey({
     this.id,
@@ -47,11 +47,11 @@ class Survey {
     required this.long,
     required this.lat,
     required this.recordTime,
-    required this.image,
-    required this.video,
+    this.image,
+    this.video,
     required this.birdStatus,
     required this.birdActivity,
-    required this.createdTime,
+    required this.count,
   });
 
   Survey copy({
@@ -64,7 +64,6 @@ class Survey {
     File? video,
     String? birdStatus,
     String? birdActivity,
-    DateTime? createdTime,
   }) =>
       Survey(
         id: id ?? this.id,
@@ -76,20 +75,20 @@ class Survey {
         video: video ?? this.video,
         birdStatus: birdStatus ?? this.birdStatus,
         birdActivity: birdActivity ?? this.birdActivity,
-        createdTime: createdTime ?? this.createdTime,
+        count: this.count
       );
 
   static Survey fromJson(Map<String, Object?> json) => Survey(
         id: json[SurveyFields.id] as int?,
         birdID: json[SurveyFields.birdID] as int,
-        long: json[SurveyFields.long] as double,
-        lat: json[SurveyFields.lat] as double,
+        long: double.parse(json[SurveyFields.long].toString()),
+        lat: double.parse(json[SurveyFields.lat].toString()),
         recordTime: DateTime.parse(json[SurveyFields.recordTime] as String),
-        image: json[SurveyFields.image] as File,
-        video: json[SurveyFields.video] as File,
+        image: json[SurveyFields.image] as File?,
+        video: json[SurveyFields.video] as File?,
         birdStatus: json[SurveyFields.birdStatus] as String,
         birdActivity: json[SurveyFields.birdActivity] as String,
-        createdTime: DateTime.parse(json[SurveyFields.createdTime] as String),
+        count: json[SurveyFields.count] as int,
        );
 
   Map<String, Object?> toJson() => {
@@ -102,6 +101,6 @@ class Survey {
         SurveyFields.video: video,
         SurveyFields.birdStatus: birdStatus,
         SurveyFields.birdActivity: birdActivity,
-        SurveyFields.createdTime: createdTime.toIso8601String(),
+        SurveyFields.count: count
       };
 }

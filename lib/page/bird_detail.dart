@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bird_app/presentation/my_flutter_app_icons.dart';
 import 'package:bird_app/utils/hero_dialog_route.dart';
 import 'package:decorated_icon/decorated_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 import '../widget/btn_ImagePicker.dart';
 import '../widget/btn_VideoPicker.dart';
 
@@ -15,22 +18,22 @@ class BirdDetail extends StatefulWidget {
     required this.englishName,
     required this.sciName,
     this.imageUrl,
-    this.dateTime,
     this.long,
     this.lat,
     this.birdCount,
+    required this.confirmCallback,
   }) : super(key: key);
 
   final int birdID;
   final String englishName;
   final String sciName;
   final String? imageUrl;
-  final String? dateTime;
-  final double? long;
-  final double? lat;
+  double? long;
+  double? lat;
   int? birdCount;
   final int imageCount = 1;
   final int VideoCount = 2;
+  final Function confirmCallback;
 
   @override
   State<BirdDetail> createState() => _BirdDetail();
@@ -38,9 +41,12 @@ class BirdDetail extends StatefulWidget {
 
 class _BirdDetail extends State<BirdDetail> {
   int _pageIndex = 0;
+  DateTime dateTime = new DateTime(0);
   String? selectedActivity;
   TextEditingController _controller = TextEditingController();
-
+  String locationMessage = "";
+  File? image;
+  File? video;
 
   String? selectedStatus;
   List<String> birdAct = [
@@ -51,6 +57,13 @@ class _BirdDetail extends State<BirdDetail> {
     "Feeding"
   ];
   List<String> birdStat = ["Injured", "Sick"];
+
+  @override
+  void initState() {
+    dateTime = DateTime.now();
+    getCurrentLocation();
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -171,7 +184,10 @@ class _BirdDetail extends State<BirdDetail> {
                                             child: Align(
                                               alignment: Alignment.bottomLeft,
                                               child: Text(
-                                                  widget.dateTime ?? '0:0:0'),
+                                                DateFormat.yMd()
+                                                    .add_jm()
+                                                    .format(dateTime),
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -202,9 +218,8 @@ class _BirdDetail extends State<BirdDetail> {
                                                 const EdgeInsets.only(left: 20),
                                             child: Align(
                                               alignment: Alignment.bottomLeft,
-                                              child: Text(
-                                                  widget.long?.toString() ??
-                                                      '0.00'),
+                                              child: Text( "${widget.lat?.toString()?? '0.00'}, ${widget.long?.toString() ?? '0.00'}"
+                                                  ),
                                             ),
                                           ),
                                         ),
@@ -392,7 +407,6 @@ class _BirdDetail extends State<BirdDetail> {
                                     ),
                                     child: DropdownButton<String>(
                                       dropdownColor: Colors.blueGrey,
-
                                       value: selectedActivity,
                                       isExpanded: true,
                                       hint: Text("Activity"),
@@ -563,7 +577,6 @@ class _BirdDetail extends State<BirdDetail> {
                                       ],
                                       //birdcount
                                       onChanged: (text) => {
-
                                         setState(
                                           () {
                                             widget.birdCount = int.parse(text);
@@ -572,13 +585,12 @@ class _BirdDetail extends State<BirdDetail> {
                                       },
 
                                       decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        hintText:
-                                            widget.birdCount?.toString() ?? '0',
-                                        hintStyle: TextStyle(
-                                          color: Colors.white
-                                        )
-                                      ),
+                                          border: InputBorder.none,
+                                          hintText:
+                                              widget.birdCount?.toString() ??
+                                                  '0',
+                                          hintStyle:
+                                              TextStyle(color: Colors.white)),
 
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 30),
@@ -626,7 +638,18 @@ class _BirdDetail extends State<BirdDetail> {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: InkWell(
-                              onTap: (){
+                              onTap: () {
+                                widget.confirmCallback(
+                                    widget.birdID,
+                                    widget.birdCount ?? 0,
+                                    dateTime,
+                                    widget.lat ?? 0.toDouble(),
+                                    widget.long?? 0.toDouble(),
+                                    selectedActivity ?? 'none',
+                                    selectedStatus ?? 'none',
+                                    image,
+                                    video
+                                );
                                 Navigator.pop(context);
                               },
                               child: Align(
@@ -649,7 +672,7 @@ class _BirdDetail extends State<BirdDetail> {
     //bird count add
     if (action == 1) {
       setState(() {
-        if(count < 99) {
+        if (count < 99) {
           widget.birdCount = count + 1;
           _controller.text = (count + 1).toString();
         }
@@ -671,5 +694,24 @@ class _BirdDetail extends State<BirdDetail> {
 
   void updatePage() {
     setState(() => _pageIndex = ((_pageIndex + 1) % 2));
+  }
+
+  void getCurrentLocation() async{
+
+    LocationPermission permission;
+    permission = await Geolocator.requestPermission();
+
+    var position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
+    var lastPosition = await Geolocator.getLastKnownPosition();
+
+    print(lastPosition);
+
+
+    setState(() {
+      widget.lat = position.latitude;
+      widget.long = position.longitude;
+    });
+
   }
 }
