@@ -1,6 +1,7 @@
 import 'package:bird_app/db/surveylist_db.dart';
 import 'package:bird_app/model/survey.dart';
 import 'package:bird_app/page/bird_detail.dart';
+import 'package:bird_app/page/survey_list_page.dart';
 import 'package:bird_app/page/survey_page_main.dart';
 import 'package:bird_app/widget/bottomNavBar.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   bool isLoading = false;
   int? userID = 1;
-  late List<Survey> surveys;
+  late List<Survey> surveys = [];
 
   @override
   void initState() {
@@ -82,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
         index: _currentIndex,
         children: [
           HomePage(
-            updatePage: testSurveyList,
+            updatePage: submitSurveyList,
           ), //index 0
           BirdDetail(
             birdID: 1,
@@ -96,13 +97,9 @@ class _MyHomePageState extends State<MyHomePage> {
           SurveyPageMain(
             confirmCallback: confirmCallback,
           ), //index 2
-          SurveyPageMain(
-            confirmCallback: confirmCallback,
-          ), //index 3
+          SurveyListPage(surveys: surveys,refreshList: refresh), //index 3
           const ProfilePage(), //index 4
-          SurveyPageMain(
-            confirmCallback: confirmCallback,
-          ), //index 5
+          SurveyListPage(surveys: surveys,refreshList: refresh), //index 5
         ],
       ),
       bottomNavigationBar: Container(
@@ -158,6 +155,11 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     await SurveyListDb.instance.create(survey);
+
+    List<Survey> surveysList = await SurveyListDb.instance.readAllSurveys();
+
+    setState(() => {surveys = surveysList});
+    print('list updated');
   }
 
   Future refreshSurveys() async {
@@ -166,29 +168,28 @@ class _MyHomePageState extends State<MyHomePage> {
     surveys = await SurveyListDb.instance.readAllSurveys();
 
     setState(() => isLoading = false);
-    print('hello');
     for (var survey in surveys) {
       print(
           'BirdID: ${survey.birdID}, BirdCount: ${survey.count}, Activity: ${survey.birdActivity}');
     }
   }
 
-
-  Future<http.Response> testSurveyList() async {
-
+  Future<http.Response> submitSurveyList() async {
     setState(() => isLoading = true);
 
     List<Survey> surveys = await SurveyListDb.instance.readAllSurveys();
 
-    SurveyList surveyList = SurveyList(userID: userID, createdTime: DateTime.now(), surveyList: surveys);
-
+    SurveyList surveyList = SurveyList(
+        userID: userID, createdTime: DateTime.now(), surveyList: surveys);
 
     print(json.encode(surveyList.toJson()));
 
     var body = json.encode(surveyList.toJson());
 
-    var response = await http.post(Uri.http('192.168.1.3:9003', '/uploadBirdList'),headers: {"Content-Type": "application/json"},
-    body: body);
+    var response = await http.post(
+        Uri.http('192.168.1.3:9003', '/uploadBirdList'),
+        headers: {"Content-Type": "application/json"},
+        body: body);
 
     print("${response.statusCode}");
     print("${response.body}");
@@ -196,17 +197,20 @@ class _MyHomePageState extends State<MyHomePage> {
     return response;
   }
 
-  // Future submitSurveys() async {
-  //   var response = await http.get(Uri.http('192.168.1.3:9003', '/birdlist'));
-  //   var jsonData = jsonDecode(response.body);
-  //   List<Bird> birdList = [];
-  //
-  //   for (var b in jsonData) {
-  //     Bird bird = Bird(
-  //         b['BirdID'], b['EnglishName'], b['ChineseName'], b['ScientificName']);
-  //     birdList.add(bird);
-  //   }
-  //   print(birdList.length);
-  //   return birdList;
-  // }
+  void refresh(){}
+
+
+// Future submitSurveys() async {
+//   var response = await http.get(Uri.http('192.168.1.3:9003', '/birdlist'));
+//   var jsonData = jsonDecode(response.body);
+//   List<Bird> birdList = [];
+//
+//   for (var b in jsonData) {
+//     Bird bird = Bird(
+//         b['BirdID'], b['EnglishName'], b['ChineseName'], b['ScientificName']);
+//     birdList.add(bird);
+//   }
+//   print(birdList.length);
+//   return birdList;
+// }
 }

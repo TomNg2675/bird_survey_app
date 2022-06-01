@@ -21,7 +21,7 @@ class _SurveyPageMainState extends State<SurveyPageMain> {
 
   //fetch full Bird list from API
   Future getBirdList() async {
-    var response = await http.get(Uri.http('192.168.1.3:9003', '/birdlist'));
+    var response = await http.get(Uri.http('58.176.20.78:9003', '/birdlist'));
     var jsonData = jsonDecode(response.body);
     List<Bird> birdList = [];
 
