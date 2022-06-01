@@ -12,7 +12,7 @@ class SurveyList {
 
   Map<String, dynamic> toJson() => {
         'userID': userID,
-        'createdTime': createdTime,
+        'createdTime': createdTime.toIso8601String(),
         'surveyList':
             List<dynamic>.from(surveyList.map((survey) => survey.toJson()))
       };

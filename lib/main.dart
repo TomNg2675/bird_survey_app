@@ -174,8 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 
-  Future testSurveyList() async {
-    if (userID == null) return;
+  Future<http.Response> testSurveyList() async {
 
     setState(() => isLoading = true);
 
@@ -183,8 +182,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
     SurveyList surveyList = SurveyList(userID: userID, createdTime: DateTime.now(), surveyList: surveys);
 
+
+    print(json.encode(surveyList.toJson()));
+
+    var body = json.encode(surveyList.toJson());
+
+    var response = await http.post(Uri.http('192.168.1.3:9003', '/uploadBirdList'),headers: {"Content-Type": "application/json"},
+    body: body);
+
+    print("${response.statusCode}");
+    print("${response.body}");
     setState(() => isLoading = false);
-    print(surveyList.toJson().toString());
+    return response;
   }
 
   // Future submitSurveys() async {
